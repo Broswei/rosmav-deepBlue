@@ -42,13 +42,15 @@ class DepthControl(Node):
 
     def desired_depth_callback(self, msg):
         """
-        This listens for a manual published message controlling the depth
+        This listens for a manual published message controlling the desired depth
         """
         self.desired_depth = msg.relative
 
     def depth_callback(self, msg):
         """
-        This is the callback method for the depth. This function takes the current depths and publishes power
+        This is the callback method for the depth. This function takes the current depths and caluculates power based on our PID Controller.
+        Clips power into the range of -100 to 100 and is converted into manual control message type (-1000 to 1000). Returns target, current depths,
+        and the power calculated by the PID.
         """
         # Checking if a desired_depth has been inputed
         if  self.desired_depth is None:

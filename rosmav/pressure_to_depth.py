@@ -8,6 +8,9 @@ from mavros_msgs.msg import Altitude
 class PressureConverter(Node):
 
     def __init__(self):
+        """
+        Initializes the node.
+        """
 
         super().__init__("depth_node")
 
@@ -27,6 +30,10 @@ class PressureConverter(Node):
         self.get_logger().info("starting node...")
 
     def pressure_callback(self, msg:Pressure):
+        """
+        Callback for the pressure subscription. Calculates the pressure purely from water --> converts to depth. Takes into account
+        the offset for a ROV that we tested to ensure that surface depth is close to 0.00. Logs pressure and depth to 3 decimal places.
+        """
         depth = Altitude() 
         pressure = msg.fluid_pressure - 101325 # subtracted the surface pressure of 1 atm --> 101325 Pa
         depth.header.stamp = self.get_clock().now().to_msg()
@@ -35,6 +42,9 @@ class PressureConverter(Node):
         self.get_logger().info(f"Depth: {depth.relative:.3f}")
 
     def calculate_depth(self, pressure):
+        """
+        Calculates depth from pressure, rho, and gravitational acceleration constant.
+        """
         water_density = 1000
         g = 9.81
         return ((pressure) / (water_density * g))
