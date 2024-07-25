@@ -1,0 +1,13 @@
+launch:
+
+- node:
+    pkg: "rosmav"
+    exec: "ros_bluerov2_interface"
+    name: "ros_bluerov2_interface"
+    namespace: "bluerov2"
+
+- node: 
+    pkg: "rosmav"
+    exec: "depth"
+    name: "pressure_to_depth"
+    namespace: "bluerov2"
