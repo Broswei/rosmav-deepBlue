@@ -38,6 +38,7 @@ class PressureConverter(Node):
         pressure = msg.fluid_pressure - 101325 # subtracted the surface pressure of 1 atm --> 101325 Pa
         depth.header.stamp = self.get_clock().now().to_msg()
         depth.relative = self.calculate_depth(pressure) - 0.22 # constant subtraction required between different ROVs
+        self.depth.publish(depth)
         self.get_logger().info(f"Pressure: {pressure:.3f}")
         self.get_logger().info(f"Depth: {depth.relative:.3f}")
 

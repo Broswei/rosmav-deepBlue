@@ -21,7 +21,7 @@ class DepthControl(Node):
         self.desired_depth = None
 
         # Coefficients k_p  k_i  k_d
-        self.pid = PID(3.0, 0.5, 8.0)
+        self.pid = PID(3.0, 0, 8.0)
 
         # Publisher of the manual_control to move the rov
         self.desired_depth_pub = self.create_publisher(
@@ -75,7 +75,7 @@ class DepthControl(Node):
         manual_msg.header.stamp = self.get_clock().now().to_msg()
 
         # Setting the z-axis which is up and publishing
-        manual_msg.z = -10 * power
+        manual_msg.z = -10*power
         self.desired_depth_pub.publish(manual_msg)
 
 
