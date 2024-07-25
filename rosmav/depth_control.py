@@ -2,7 +2,6 @@
 
 import rclpy
 from rclpy.node import Node
-from pymavlink import mavutil
 from mavros_msgs.msg import ManualControl, Altitude 
 
 from rosmav.pid import PID
@@ -21,7 +20,7 @@ class DepthControl(Node):
         self.desired_depth = None
 
         # Coefficients k_p  k_i  k_d
-        self.pid = PID(3.0, 0, 8.0)
+        self.pid = PID(8.0, 0.5, 8.0)
 
         # Publisher of the manual_control to move the rov
         self.desired_depth_pub = self.create_publisher(

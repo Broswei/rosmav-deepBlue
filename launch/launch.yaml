@@ -11,3 +11,10 @@ launch:
     exec: "depth"
     name: "pressure_to_depth"
     namespace: "bluerov2"
+
+- node:
+    pkg: "rosmav"
+    exec: "pid_control"
+    name: "depth_control"
+    namespace: "bluerov2"
+    
