@@ -19,8 +19,16 @@ class DepthControl(Node):
 
         self.desired_depth = None
 
+
+        self.declare_parameter("k_p", 8.0)
+        self.Kp = self.get_parameter("k_p").value
+        self.declare_parameter("k_i", 0.5)
+        self.Ki = self.get_parameter("k_i").value
+        self.declare_parameter("k_d", 8.0)
+        self.Kd = self.get_parameter("k_d").value
+
         # Coefficients k_p  k_i  k_d
-        self.pid = PID(8.0, 0.5, 8.0)
+        self.pid = PID(self.k_p, self.k_i, self.k_d)
 
         # Publisher of the manual_control to move the rov
         self.desired_depth_pub = self.create_publisher(

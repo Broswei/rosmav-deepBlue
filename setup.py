@@ -30,6 +30,7 @@ setup(
             "dance_freak = rosmav.dance:main",
             "depth = rosmav.pressure_to_depth:main",
             "pid_control = rosmav.depth_control:main",
+            "heading_control = rosmav.heading_control:main",
         ],
     },
 )

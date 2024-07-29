@@ -4,17 +4,47 @@ launch:
     pkg: "rosmav"
     exec: "ros_bluerov2_interface"
     name: "ros_bluerov2_interface"
-    namespace: "bluerov2"
+    namespace: ""
 
 - node: 
     pkg: "rosmav"
     exec: "depth"
     name: "pressure_to_depth"
-    namespace: "bluerov2"
+    namespace: ""
 
 - node:
     pkg: "rosmav"
     exec: "pid_control"
     name: "depth_control"
-    namespace: "bluerov2"
-    
+    namespace: ""
+    -
+        name: "k_p"
+        value: 8.0
+    -
+        name: "k_i"
+        valie: 0.5
+    -
+        name: "k_d"
+        value: 8.0
+
+# - node: 
+#     pkg: "rosmav"
+#     exec: "heading_control"
+#     name: "heading_control"
+#     namespace: ""
+#     param: 
+#     -
+#         name: "Kp"
+#         value: 3.0
+#     -
+#         name: "Ki"
+#         value: 0.0
+#     -
+#         name: "Kd"
+#         value: 8.0
+#     -
+#         name: "max_integral"
+#         value: 1.0
+#     -
+#         name: "max_yaw"
+#         value: 100.0
