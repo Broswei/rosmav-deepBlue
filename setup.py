@@ -31,6 +31,7 @@ setup(
             "depth = rosmav.pressure_to_depth:main",
             "pid_control = rosmav.depth_control:main",
             "heading_control = rosmav.heading_control:main",
+            "bluerov2_camera_interface = rosmav.bluerov2_camera_interface:main"
         ],
     },
 )
