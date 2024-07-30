@@ -30,6 +30,10 @@ class BLUEROV2LANEFOLLOWING(Node):
     def get_heading(self, image):
 
         slopes = ld.return_slopes(image)  # This returns a list of slopes
+
+        # if len(slopes) == 0: 
+        #     return
+        
         center_slope = max(abs(slope) for slope in slopes)
 
         return np.degrees(np.arctan(center_slope))  
@@ -38,22 +42,31 @@ class BLUEROV2LANEFOLLOWING(Node):
     def desired_heading_callback(self, image):
         # Calculating the desired with the other functions
 
+        try:
+            new_desired_heading = self.get_heading(ld.detect_lanes(image))
 
-        new_desired_heading = self.get_heading(self, ld.detect_lanes(image))
 
-
-        # publish the desired heading for the PID
-        
-        self.desired_heading_publisher.publish(new_desired_heading)
-        self.get_logger().info(f"Published desired heading: {new_desired_heading} deg.")
+            # publish the desired heading for the PID
+            
+            self.desired_heading_publisher.publish(new_desired_heading)
+            self.get_logger().info(f"Published desired heading: {new_desired_heading} deg.")
+        except: 
+            self.get_logger().info(f"No lanes detected")
 
 
     def image_callback(self, msg: Image):
-        image = self.cvb.imgmsg_to_cv2(msg)
+        image = self.cvb.imgmsg_to_cv2(msg, "bgr8")
 
         # Save the image
         cv2.imwrite("image.png", image) 
+        # # Get the dimensions of the image
+        # height, width, channels = image.shape
+
+        # # # Log the dimensions
+        # self.get_logger().info(f"Image dimensions: width={width}, height={height}, channels={channels}")
         
+
+        # 
         self.desired_heading_callback(image)
 
 

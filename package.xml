@@ -20,6 +20,9 @@
   <depend>std_msgs</depend>
   <depend>python3-gi</depend>
   <depend>cv_bridge</depend>
+  <depend>gstreamer1.0-plugins-good</depend>
+  <depend>gstreamer1.0-plugins-bad</depend>
+  <depend>gstreamer1.0-libav</depend>
 
   <exec_depend>ros2launch</exec_depend>
 

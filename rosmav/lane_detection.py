@@ -2,17 +2,22 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from random import randrange
+from cv_bridge import CvBridge
 
 
 
 
-def detect_lines(img, threshold1 = 50, threshold2 = 150, apertureSize = 3,  minLineLength = 100, maxLineGap = 10):
+def detect_lines(img, threshold1 = 150, threshold2 = 150, apertureSize = 3,  minLineLength = 100, maxLineGap = 10):
 
     # img = cv2.imread(img)
-    img = cv2.resize(img, (1100, 650))
-    height, width = img.shape[:2]
-    img = img[height//3: :]  # This slices the top half of the image
+    # cvb = CvBridge()
+    # img = cvb.imgmsg_to_cv2(img)
+        # img = cv2.resize(img, (1100, 650))
+        # height, width = img.shape[:2]
+        # img = img[height//3: :]  # This slices the top half of the image
 
+    img = np.asarray(img)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) # convert to grayscale
     edges = cv2.Canny(gray, threshold1, threshold2, apertureSize=apertureSize) # detect edges
     lines = cv2.HoughLinesP(
@@ -39,29 +44,32 @@ def draw_lines(img, lines, color = (255, 0, 255)):
 def get_slopes_intercepts(lines):
     slopes = []
     intercepts = []
-    for line in lines:
-        
-        print(line[0])
-        x1 = line[0][0]
-        y1 = line[0][1]
-        x2 = line[0][2]
-        y2 = line[0][3]
+
+    if lines is not None:
+        for line in lines:
+            
+            print("SIGMA", line)
+            
+            x1 = line[0][0]
+            y1 = line[0][1]
+            x2 = line[0][2]
+            y2 = 100
 
 
-        if x2 - x1 == 0:
-            denominator = 0.000001
-        else:
-            denominator = x2 - x1
+            if x2 - x1 == 0:
+                denominator = 0.01
+            else:
+                denominator = x2 - x1
 
 
-        slope = float((y2-y1)/(denominator))
+            slope = float((y2-y1)/(denominator))
 
-        if slope == 0:
-            slope == 0.000001
+            if slope == 0:
+                slope = 0.001
 
-        intercept = float(x2-y2/slope)
-        slopes.append(slope)
-        intercepts.append(intercept)
+            intercept = x2-y2/slope
+            slopes.append(slope)
+            intercepts.append(intercept)
     print (slopes)
     print (intercepts) 
     return slopes, intercepts
