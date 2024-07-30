@@ -1,0 +1,38 @@
+launch:
+
+- node:
+    pkg: "rosmav"
+    exec: "ros_bluerov2_interface"
+    name: "ros_bluerov2_interface"
+    namespace: ""
+
+- node: 
+    pkg: "rosmav"
+    exec: "bluerov2_camera_interface"
+    name: "bluerov2_camera_interface"
+    namespace: ""
+
+- node: 
+    pkg: "rosmav"
+    exec: "lane_following"
+    name: "lane_following"
+    namespace: ""
+
+- node:
+    pkg: "rosmav"
+    exec: "heading_control"
+    name: "heading_control"
+    namespace: ""
+    param:
+    -
+        name: "Kp"
+        value: 8.0
+    -
+        name: "Ki"
+        value: 0.5
+    -
+        name: "Kd"
+        value: 8.0
+    -   
+        name: "max_integral"
+        value: 1.0

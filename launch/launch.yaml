@@ -22,7 +22,7 @@ launch:
         value: 8.0
     -
         name: "k_i"
-        valie: 0.5
+        value: 0.5
     -
         name: "k_d"
         value: 8.0
