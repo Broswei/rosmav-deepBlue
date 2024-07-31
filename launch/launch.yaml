@@ -12,39 +12,39 @@ launch:
     name: "pressure_to_depth"
     namespace: ""
 
-- node:
-    pkg: "rosmav"
-    exec: "pid_control"
-    name: "depth_control"
-    namespace: ""
-    -
-        name: "k_p"
-        value: 8.0
-    -
-        name: "k_i"
-        value: 0.5
-    -
-        name: "k_d"
-        value: 8.0
-
-# - node: 
+# - node:
 #     pkg: "rosmav"
-#     exec: "heading_control"
-#     name: "heading_control"
+#     exec: "pid_control"
+#     name: "depth_control"
 #     namespace: ""
-#     param: 
 #     -
-#         name: "Kp"
-#         value: 3.0
-#     -
-#         name: "Ki"
-#         value: 0.0
-#     -
-#         name: "Kd"
+#         name: "k_p"
 #         value: 8.0
 #     -
-#         name: "max_integral"
-#         value: 1.0
+#         name: "k_i"
+#         value: 0.5
 #     -
-#         name: "max_yaw"
-#         value: 100.0
+#         name: "k_d"
+#         value: 8.0
+
+- node: 
+    pkg: "rosmav"
+    exec: "heading_control"
+    name: "heading_control"
+    namespace: ""
+    param: 
+    -
+        name: "Kp"
+        value: 3.0
+    -
+        name: "Ki"
+        value: 0.0
+    -
+        name: "Kd"
+        value: 8.0
+    -
+        name: "max_integral"
+        value: 1.0
+    -
+        name: "max_yaw"
+        value: 100.0

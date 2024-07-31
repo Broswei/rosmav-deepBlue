@@ -32,7 +32,8 @@ setup(
             "pid_control = rosmav.depth_control:main",
             "heading_control = rosmav.heading_control:main",
             "bluerov2_camera_interface = rosmav.bluerov2_camera_interface:main",
-            "lane_following = rosmav.lane_following:main"
+            "lane_following = rosmav.lane_following:main",
+            "april_tags = rosmav.apriltag_detection:main"
         ],
     },
 )

@@ -11,6 +11,7 @@ class AprilTagDetection(Node):
 
     fx = 1060.7
     fy = 1060.7
+    avg_rel_error = 0
 
     def __init__(self):
         super().__init__("april_tags")
@@ -38,8 +39,8 @@ class AprilTagDetection(Node):
         )
 
 
-    def heading_callback(self, image):
-        pass
+    def heading_callback(self, msg):
+        self.desired_heading_publisher.publish(msg.data + self.avg_rel_error)
 
 
     def image_callback(self, msg: Image):
@@ -57,6 +58,7 @@ class AprilTagDetection(Node):
 
         tags = self.at_detector.detect(image, estimate_tag_pose=True, camera_params=[self.fx, self.fy, img_height/2, img_width/2], tag_size=0.1)
         color_img = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+        sum_rel_headings = 0
         for tag in tags:
             for idx in range(len(tag.corners)):
                 cv2.line(color_img, tuple(tag.corners[idx - 1, :].astype(int)), tuple(tag.corners[idx, :].astype(int)), (0, 255, 0), 2)
@@ -66,7 +68,10 @@ class AprilTagDetection(Node):
                         fontFace=cv2.FONT_HERSHEY_SIMPLEX,
                         fontScale=1.2,
                         color=(255, 0, 0))
+            sum_rel_headings += self.calc_rel_horizontal_angle(tag, img_height)
             print (f"TAG ID: {tag.tag_id} \n X ANGLE: {self.calc_rel_horizontal_angle(tag, img_height)} \n Y ANGLE: {self.calc_rel_vertical_angle(tag,img_width)}\n DISTANCE: {self.calc_distance_away(tag)}")
+
+        self.avg_rel_error = sum_rel_headings / len(tags)
 
     def calc_rel_horizontal_angle(self, tag, height):
         x = tag.center[0]

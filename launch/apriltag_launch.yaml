@@ -1,0 +1,38 @@
+launch:
+
+- node:
+    pkg: "rosmav"
+    exec: "ros_bluerov2_interface"
+    name: "ros_bluerov2_interface"
+    namespace: ""
+
+- node: 
+    pkg: "rosmav"
+    exec: "bluerov2_camera_interface"
+    name: "bluerov2_camera_interface"
+    namespace: ""
+
+- node: 
+    pkg: "rosmav"
+    exec: "april_tags"
+    name: "april_tags"
+    namespace: ""
+
+- node:
+    pkg: "rosmav"
+    exec: "heading_control"
+    name: "heading_control"
+    namespace: ""
+    param:
+    -
+        name: "Kp"
+        value: 1.0
+    -
+        name: "Ki"
+        value: 0.0625
+    -
+        name: "Kd"
+        value: 1.5
+    -   
+        name: "max_integral"
+        value: 1.0
