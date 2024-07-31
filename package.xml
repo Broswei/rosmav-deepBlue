@@ -23,6 +23,8 @@
   <depend>gstreamer1.0-plugins-good</depend>
   <depend>gstreamer1.0-plugins-bad</depend>
   <depend>gstreamer1.0-libav</depend>
+  <depend>dt-apriltags</depend>
+  <depend>dt_apriltags</depend>
 
   <exec_depend>ros2launch</exec_depend>
 

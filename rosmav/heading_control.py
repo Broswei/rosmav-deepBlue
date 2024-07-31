@@ -21,11 +21,11 @@ class HeadingPIDNode(Node):
     def __init__(self):
         super().__init__("heading_control")
 
-        self.declare_parameter("Kp", 8.0)
+        self.declare_parameter("Kp", 1.1)
         self.Kp = self.get_parameter("Kp").value
-        self.declare_parameter("Ki", 0.5)
+        self.declare_parameter("Ki", 0.0)
         self.Ki = self.get_parameter("Ki").value
-        self.declare_parameter("Kd", 8.0)
+        self.declare_parameter("Kd", 0.33)
         self.Kd = self.get_parameter("Kd").value
         self.declare_parameter("max_integral", 1.0)
         self.max_integral = self.get_parameter("max_integral").value
@@ -61,9 +61,10 @@ class HeadingPIDNode(Node):
 
         if error > 180:
             error -= 360
-        elif error < 180:
+        elif error < -180:
             error += 360
         
+        self.get_logger().info(f"error: {error}")
         # end of angle wrap
 
         # if self.previous_heading is None:

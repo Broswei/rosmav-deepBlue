@@ -40,7 +40,7 @@ class BLUEROV2LANEFOLLOWING(Node):
         if len(slopes) != 0:
             center_slope = max(abs(slope) for slope in slopes)
 
-            return (-np.degrees(np.arctan(center_slope)) + self.curr_heading)
+            return ((90 - np.degrees(np.arctan(center_slope))) + self.curr_heading)
         return 0
 
 
