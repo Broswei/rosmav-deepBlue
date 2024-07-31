@@ -34,6 +34,7 @@ setup(
             "bluerov2_camera_interface = rosmav.bluerov2_camera_interface:main",
             "lane_following = rosmav.lane_following:main",
             "april_tags = rosmav.apriltag_detection:main"
+            "ccp = rosmav.chasing_control_procedure:main"
         ],
     },
 )
