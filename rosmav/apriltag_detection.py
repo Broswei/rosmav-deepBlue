@@ -6,7 +6,6 @@ from cv_bridge import CvBridge
 import cv2
 from dt_apriltags import Detector
 import numpy as np
-from mavros_msgs.msg import OverrideRCIn
 
 class AprilTagDetection(Node):
 
@@ -37,10 +36,6 @@ class AprilTagDetection(Node):
 
         self.subscription = self.create_subscription(
             Image, "bluerov2/camera", self.image_callback, 10
-        )
-
-        self.lights_publisher = self.create_publisher(
-            OverrideRCIn, "bluerov2/override_rc", self.override_callback, 10
         )
 
 
@@ -80,9 +75,6 @@ class AprilTagDetection(Node):
                             color=(255, 0, 0))
                 #self.get_logger().info(f"TAG ID: {tag.tag_id} \n X ANGLE: {self.calc_rel_horizontal_angle(tag, img_width)} \n Y ANGLE: {self.calc_rel_vertical_angle(tag,img_height)}\n DISTANCE: {self.calc_distance_away(tag)}")
         cv2.imwrite("image.png", image) 
-
-    def override_callback(self, msg):
-        pass
 
     def calc_rel_horizontal_angle(self, tag, width):
         x = tag.center[0]
