@@ -142,9 +142,9 @@ class CCPNode (Node):
         else:
             self.backwards(msg)
         self.manual_control_pub.publish(msg)
+    
+    
     # Timer handling
-
-
     def switch_dir(self):
         if self.going_forward and not self.april_mode:
             self.going_forward = False
