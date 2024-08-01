@@ -64,9 +64,9 @@ class CCPNode (Node):
         
         tags = self.at_detector.detect(image, estimate_tag_pose=True, camera_params=[self.fx, self.fy, img_width/8, img_height/8], tag_size=0.1)
     
-        if tags: # april tag
+        if len(tags) > 0: # april tag
             temp_stop = ManualControl()
-            temp_stop.x = 0
+            temp_stop.x = 0.0
             self.manual_control_pub.publish(temp_stop)
             closest_tag = min(tags, key=lambda tag: self.calc_distance_away(tag))
             self.desired_heading = int(self.calc_rel_horizontal_angle(closest_tag, img_width))
@@ -76,8 +76,8 @@ class CCPNode (Node):
             image = self.cvb.imgmsg_to_cv2(msg, "bgr8")
             image, lines = ld.detect_lines(image, 300, 350, 5, 100, 150)
             image = ld.draw_lines(image, lines)
-            cv2.imwrite("image.png", image) 
             slopes, intercepts = ld.get_slopes_intercepts(lines)
+            cv2.imwrite("image.png", image) 
             if len(slopes) != 0:
                 center_slope = max(abs(slope) for slope in slopes)
 
@@ -96,10 +96,10 @@ class CCPNode (Node):
             send_mc = ManualControl()
             send_override = OverrideRCIn()
             if self.calc_distance_away(closest_tag) > 4:
-                send_mc.x = 10
+                send_mc.x = 10.0
                 self.manual_control_pub.publish(send_mc)
             else:
-                send_mc.x = 0
+                send_mc.x = 0.0
                 self.manual_control_pub.publish(send_mc)
                 send_override.channels[8] = 2000
                 send_override.channels[9] = 2000
@@ -134,10 +134,10 @@ class CCPNode (Node):
 
     # Patrolling the seas
     def forwards(self, msg): 
-        msg.x = 20
+        msg.x = 20.0
 
     def backwards(self, msg):
-        msg.x = -20
+        msg.x = -20.0
         
     def patrol_the_sea(self):
         """

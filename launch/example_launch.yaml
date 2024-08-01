@@ -15,5 +15,5 @@ launch:
 - node:
     pkg: "rosmav"
     exec: "pid_control"
-    name: "depth_control"
+    name: "depth_pid_node"
     namespace: ""
