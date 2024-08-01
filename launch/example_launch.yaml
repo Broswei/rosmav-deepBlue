@@ -17,12 +17,3 @@ launch:
     exec: "pid_control"
     name: "depth_control"
     namespace: ""
-    -
-        name: "k_p"
-        value: 8.0
-    -
-        name: "k_i"
-        valie: 0.5
-    -
-        name: "k_d"
-        value: 8.0

@@ -11,7 +11,7 @@ from dt_apriltags import Detector
 import numpy as np
 import time
 
-import lane_detection as ld
+import rosmav.lane_detection as ld
 
 class CCPNode (Node):
 
@@ -53,6 +53,8 @@ class CCPNode (Node):
 
     # Case by case image callbacks
     def image_callback(self, msg):
+
+
         image = self.cvb.imgmsg_to_cv2(msg, "bgr8")
         cv2.imwrite("image.png", image) 
 
@@ -81,6 +83,7 @@ class CCPNode (Node):
 
                 self.desired_heading = (90 - np.degrees(np.arctan(center_slope))) + self.curr_heading
             else:
+                print("No April Tags or lines to follow have been found. Rotating 178 deg.")
                 self.desired_heading = self.curr_heading + 178
 
         new_desired_heading = Int16()
@@ -110,6 +113,7 @@ class CCPNode (Node):
 
 
     def heading_callback(self, msg):
+        
         self.curr_heading = msg.data
     
 
@@ -136,6 +140,9 @@ class CCPNode (Node):
         msg.x = -20
         
     def patrol_the_sea(self):
+        """
+        Go forwards if going forwards is true and goes backwards otherwise.
+        """
         msg = ManualControl()
         if self.going_forward:
             self.forwards(msg)
@@ -146,6 +153,9 @@ class CCPNode (Node):
     
     # Timer handling
     def switch_dir(self):
+        """
+        Doesn't do shit
+        """
         if self.going_forward and not self.april_mode:
             self.going_forward = False
         elif not self.going_forward and not self.april_mode:

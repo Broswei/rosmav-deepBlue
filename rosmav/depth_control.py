@@ -20,12 +20,21 @@ class DepthControl(Node):
         self.desired_depth = None
 
 
-        self.declare_parameter("k_p", 8.0)
+        self.declare_parameter("k_p", 1.0)
         self.Kp = self.get_parameter("k_p").value
-        self.declare_parameter("k_i", 0.5)
+        self.declare_parameter("k_i", 0.0)
         self.Ki = self.get_parameter("k_i").value
-        self.declare_parameter("k_d", 8.0)
+        self.declare_parameter("k_d", 0.0)
         self.Kd = self.get_parameter("k_d").value
+
+        self.declare_parameter("depth_max", 1.0)
+        self.depth_max = self.get_parameter("depth_max").value
+        self.declare_parameter("depth_min", 0.0)
+        self.depth_min = self.get_parameter("depth_min").value
+
+
+        self.desired_depth = (self.depth_max + self.depth_min) / 2
+
 
         # Coefficients k_p  k_i  k_d
         self.pid = PID(self.k_p, self.k_i, self.k_d)

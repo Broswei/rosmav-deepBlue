@@ -29,7 +29,7 @@ launch:
 
 - node: 
     pkg: "rosmav"
-    exec: "heading_control"
+    exec: "depth_control"
     name: "heading_control"
     namespace: ""
     # param: 
