@@ -53,7 +53,7 @@ class CCPNode (Node):
 
     # Case by case image callbacks
     def image_callback(self, msg):
-
+        time.sleep(0.5) # time delay
 
         image = msg
         cv2.imwrite("image.png", image) 
@@ -64,12 +64,19 @@ class CCPNode (Node):
         
         tags = self.at_detector.detect(image, estimate_tag_pose=True, camera_params=[self.fx, self.fy, img_width/8, img_height/8], tag_size=0.1)
     
-        if len(tags) > 0: # april tag
+        if len(tags) > 0: # april tag   sign
             temp_stop = ManualControl()
             temp_stop.x = 0.0
+            temp_stop.y = 0.0
             self.manual_control_pub.publish(temp_stop)
             closest_tag = min(tags, key=lambda tag: self.calc_distance_away(tag))
-            self.desired_heading = int(self.calc_rel_horizontal_angle(closest_tag, img_width))
+
+            # self.desired_heading = int(self.calc_rel_horizontal_angle(closest_tag, img_width)) + self.curr_heading
+            self.desired_heading = self.curr_heading - int(self.calc_rel_horizontal_angle(closest_tag, img_width)) 
+            self.desired_heading = (self.desired_heading + 360) % 360
+            # might be incorrect
+
+
             self.april_mode = True
         else: # lane following
             self.april_mode = False
@@ -96,11 +103,12 @@ class CCPNode (Node):
 
         if self.april_mode:
             send_mc = ManualControl()
-            while self.calc_distance_away(closest_tag) > 4:
+            if self.calc_distance_away(closest_tag) > 1:
                 send_mc.x = 10.0
                 self.manual_control_pub.publish(send_mc)
             else:
                 send_mc.x = 0.0
+                send_mc.y = 0.0
                 self.manual_control_pub.publish(send_mc)
                 self.turn_lights_on(100)
                 time.sleep(0.1)
@@ -128,6 +136,7 @@ class CCPNode (Node):
     def calc_distance_away(self, tag):
         return (np.linalg.norm(tag.pose_t))
     
+    
     def turn_lights_on(self, level):
         """
         Turn the lights on.
@@ -143,10 +152,10 @@ class CCPNode (Node):
         self.command_pub.publish(commands)
 
     # Patrolling the seas
-    def forwards(self, msg): 
+    def forward(self, msg): 
         msg.x = 20.0
 
-    def backwards(self, msg):
+    def back(self, msg):
         msg.x = -20.0
         
     def patrol_the_sea(self):
@@ -155,24 +164,15 @@ class CCPNode (Node):
         """
         msg = ManualControl()
         if self.going_forward:
-            self.forwards(msg)
+            self.forward(msg)
         else:
-            self.backwards(msg)
+            self.back(msg)
         self.manual_control_pub.publish(msg)
     
     
     # Timer handling
     def switch_dir(self):
-        """
-        Doesn't do shit
-        """
-        if self.going_forward and not self.april_mode:
-            self.going_forward = False
-        elif not self.going_forward and not self.april_mode:
-            self.going_forward = True
-        else:
-            pass
-
+       self.going_forward = not self.going_forward
 
 def main(args=None):
     rclpy.init(args=args)
