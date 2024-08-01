@@ -23,3 +23,15 @@ launch:
     exec: "heading_control"
     name: "heading_control"
     namespace: ""
+
+- node: 
+    pkg: "rosmav"
+    exec: "depth"
+    name: "pressure_to_depth"
+    namespace: ""
+
+- node:
+    pkg: "rosmav"
+    exec: "pid_control"
+    name: "depth_pid_node"
+    namespace: ""

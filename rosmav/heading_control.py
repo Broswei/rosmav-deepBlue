@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 import rclpy
 from rclpy.node import Node
 from mavros_msgs.msg import ManualControl
@@ -25,7 +26,7 @@ class HeadingPIDNode(Node):
         self.Kp = self.get_parameter("Kp").value
         self.declare_parameter("Ki", 0.0)
         self.Ki = self.get_parameter("Ki").value
-        self.declare_parameter("Kd", 0.0)
+        self.declare_parameter("Kd", 0.33)
         self.Kd = self.get_parameter("Kd").value
         self.declare_parameter("max_integral", 1.0)
         self.max_integral = self.get_parameter("max_integral").value
@@ -65,27 +66,6 @@ class HeadingPIDNode(Node):
             error += 360
         
         self.get_logger().info(f"error: {error}")
-        # end of angle wrap
-
-        # if self.previous_heading is None:
-        #     self.previous_heading = heading
-        #     return
-
-        # dt = self.curr_time - self.previous_time
-
-        # # Propotional term
-        # propotional = self.Kp * error
-
-        # # Integral term
-        # self.integral += self.Ki * error * dt
-        # self.integral = min(max(self.integral, -self.max_integral), self.max_integral)
-
-        # # Derivative term
-        # derivative = self.Kd * (error - self.previous_error) / dt
-
-        # # Update previous values
-        # self.previous_error = error
-        # self.previous_heading = heading
 
         
 
@@ -98,7 +78,8 @@ class HeadingPIDNode(Node):
         self.manual_control_pub.publish(manual_control_msg)
 
 
-        self.get_logger().info(f"\nTarget Heading: {self.desired_heading.data:.3f}\n Current Heading:{heading}   \nPower: {yaw:.3f}")
+        self.get_logger().info(f"\nTarget Heading: {self.desired_heading.data:.3f}\n Current Heading:{heading}")
+        #}\n Current Heading:{heading}   \nPower: {yaw:.3f}
 
     def desired_heading_callback(self, msg):
         self.desired_heading = msg

@@ -9,7 +9,7 @@ def detect_lines(
 
     height, width = img.shape[:2]
     img = img[height//2: :]  # This slices the top half of the image
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    gray = img
     edges = cv2.Canny(gray, threshold1, threshold2, apertureSize=apertureSize)
     lines = cv2.HoughLinesP(
         edges, 1, np.pi / 180, 100, minLineLength=minLineLength, maxLineGap=maxLineGap

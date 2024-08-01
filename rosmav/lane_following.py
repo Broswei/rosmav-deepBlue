@@ -38,10 +38,16 @@ class BLUEROV2LANEFOLLOWING(Node):
 
         # slopes = ld.get_slopes_intercepts(image)  # This returns a list of slopes
         if len(slopes) != 0:
-            center_slope = max(abs(slope) for slope in slopes)
+            center_slope, index = max((abs(slope), i) for slope, i in slopes)
 
-            return ((90 - np.degrees(np.arctan(center_slope))) + self.curr_heading)
-        return 0
+            if slopes[index] >= 0: 
+                return (self.curr_heading - (90 - np.degrees(np.arctan(center_slope))))
+            else:
+                return (self.curr_heading + (90 + np.degrees(np.arctan(center_slope))))
+
+
+        else:
+            return 0
 
 
     def desired_heading_callback(self, image):
@@ -68,15 +74,6 @@ class BLUEROV2LANEFOLLOWING(Node):
     def image_callback(self, msg: Image):
         image = self.cvb.imgmsg_to_cv2(msg, "bgr8")
 
-        # Save the image
-        # # Get the dimensions of the image
-        # height, width, channels = image.shape
-
-        # # # Log the dimensions
-        # self.get_logger().info(f"Image dimensions: width={width}, height={height}, channels={channels}")
-        
-
-        # 
         self.desired_heading_callback(image)
 
 

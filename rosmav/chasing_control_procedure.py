@@ -32,7 +32,7 @@ class CCPNode (Node):
             ManualControl, "bluerov2/manual_control", 10
         )
 
-        self.override_pub = self.create_publisher(
+        self.command_pub = self.create_publisher(
             OverrideRCIn, "bluerov2/override_rc", 10
         )
 
@@ -55,7 +55,7 @@ class CCPNode (Node):
     def image_callback(self, msg):
 
 
-        image = self.cvb.imgmsg_to_cv2(msg, "bgr8")
+        image = msg
         cv2.imwrite("image.png", image) 
 
         img_width = image.shape[1]
@@ -79,12 +79,14 @@ class CCPNode (Node):
             slopes, intercepts = ld.get_slopes_intercepts(lines)
             cv2.imwrite("image.png", image) 
             if len(slopes) != 0:
-                center_slope = max(abs(slope) for slope in slopes)
+                center_slope, index = max((abs(slope), i) for slope, i in slopes)
 
-                self.desired_heading = (90 - np.degrees(np.arctan(center_slope))) + self.curr_heading
+                if slopes[index] >= 0: 
+                    self.desired_heading = (self.curr_heading - (90 - np.degrees(np.arctan(center_slope))))
+                else:
+                    self.desired_heading = (self.curr_heading + (90 + np.degrees(np.arctan(center_slope))))
             else:
-                print("No April Tags or lines to follow have been found. Rotating 178 deg.")
-                self.desired_heading = self.curr_heading + 178
+                self.desired_heading = self.curr_heading
 
         new_desired_heading = Int16()
         
@@ -94,20 +96,15 @@ class CCPNode (Node):
 
         if self.april_mode:
             send_mc = ManualControl()
-            send_override = OverrideRCIn()
-            if self.calc_distance_away(closest_tag) > 4:
+            while self.calc_distance_away(closest_tag) > 4:
                 send_mc.x = 10.0
                 self.manual_control_pub.publish(send_mc)
             else:
                 send_mc.x = 0.0
                 self.manual_control_pub.publish(send_mc)
-                send_override.channels[8] = 2000
-                send_override.channels[9] = 2000
-                self.override_pub.publish(send_override)
-                time.sleep(1000)
-                send_override.channels[8] = 1000
-                send_override.channels[9] = 1000
-                self.override_pub.publish(send_override)
+                self.turn_lights_on(100)
+                time.sleep(0.1)
+                self.turn_lights_on(0)
         else:
             self.patrol_the_sea()
 
@@ -130,7 +127,20 @@ class CCPNode (Node):
 
     def calc_distance_away(self, tag):
         return (np.linalg.norm(tag.pose_t))
+    
+    def turn_lights_on(self, level):
+        """
+        Turn the lights on.
 
+        Args:
+            level (int): The level to turn the lights on to. 0 is off, 100 is full
+        """
+        self.get_logger().info(f"Turning lights on to level {level}")
+        commands = OverrideRCIn()
+        commands.channels = [OverrideRCIn.CHAN_NOCHANGE] * 10
+        commands.channels[8] = 1000 + level * 10
+        commands.channels[9] = 1000 + level * 10
+        self.command_pub.publish(commands)
 
     # Patrolling the seas
     def forwards(self, msg): 

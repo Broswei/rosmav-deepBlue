@@ -33,7 +33,7 @@ class DepthControl(Node):
         self.depth_min = self.get_parameter("depth_min").value
 
 
-        self.desired_depth = 0.67
+        self.desired_depth = 0.4
 
 
         # Coefficients k_p  k_i  k_d

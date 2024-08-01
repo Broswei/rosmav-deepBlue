@@ -6,6 +6,8 @@ from sensor_msgs.msg import Image
 import gi
 from cv_bridge import CvBridge
 import numpy as np
+import time
+import cv2
 
 gi.require_version("Gst", "1.0")
 from gi.repository import Gst
@@ -78,15 +80,18 @@ class BlueRov2CameraInterface(Node):
             dtype=np.uint8,
         )
 
-        msg = self.cvb.cv2_to_imgmsg(np_image, encoding="bgr8")
+        np_image = cv2.cvtColor(np_image, cv2.COLOR_BGR2GRAY)
+
+        msg = self.cvb.cv2_to_imgmsg(np_image, encoding="mono8")
         msg.header.stamp = self.get_clock().now().to_msg()
         msg.header.frame_id = str(self.frame_id)
         self.publisher.publish(msg)
 
         self.get_logger().debug(f"Published image with frame_id: {self.frame_id}")
-
+        
         self.frame_id += 1
         buffer.unmap(info)
+
         return Gst.FlowReturn.OK
 
 
