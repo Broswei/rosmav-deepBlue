@@ -17,9 +17,6 @@ class DepthControl(Node):
         '''
         super().__init__("depth_control")
 
-        self.desired_depth = None
-
-
         self.declare_parameter("k_p", 15.0)
         self.Kp = self.get_parameter("k_p").value
         self.declare_parameter("k_i", 0.0)
@@ -33,7 +30,7 @@ class DepthControl(Node):
         self.depth_min = self.get_parameter("depth_min").value
 
 
-        self.desired_depth = 0.4
+        self.desired_depth = 0.67 #0.4 for a 0.21 depth, 0.67 for a 0.5 depth --> must change when given a range
 
 
         # Coefficients k_p  k_i  k_d

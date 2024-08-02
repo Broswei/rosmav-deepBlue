@@ -12,12 +12,6 @@ launch:
     name: "bluerov2_camera_interface"
     namespace: ""
 
-- node:
-    pkg: "rosmav"
-    exec: "lane_following"
-    name: "lane_following"
-    namespace: ""
-
 - node: 
     pkg: "rosmav"
     exec: "depth"
@@ -30,27 +24,14 @@ launch:
     name: "depth_pid_node"
     namespace: ""
 
-# - node: 
-#     pkg: "rosmav"
-#     exec: "ccp"
-#     name: "ccp"
-#     namespace: ""
+- node: 
+    pkg: "rosmav"
+    exec: "ccp"
+    name: "ccp"
+    namespace: ""
 
 - node:
     pkg: "rosmav"
     exec: "heading_control"
     name: "heading_control"
     namespace: ""
-
-# - node:
-#     pkg: "rosmav"
-#     exec: "depth"
-#     name: "pressure_to_depth"
-#     namespace: ""
-
-
-# - node:
-#     pkg: "rosmav"
-#     exec: "pid_control"
-#     name: "depth_control"
-#     namespace: ""

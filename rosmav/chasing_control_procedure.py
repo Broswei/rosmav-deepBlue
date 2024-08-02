@@ -11,6 +11,7 @@ from dt_apriltags import Detector
 import numpy as np
 import time
 
+
 import rosmav.lane_detection as ld
 
 class CCPNode (Node):
@@ -49,13 +50,17 @@ class CCPNode (Node):
         )
 
         self.create_timer(8, self.switch_dir)
-
+        # self.create_timer(0.5, self.image_callback)
 
     # Case by case image callbacks
+
+    # def image_callback(self):
     def image_callback(self, msg):
         time.sleep(0.5) # time delay
 
         image = msg
+        image = self.cvb.imgmsg_to_cv2(image, "bgr8")
+        # image = cv2.imread("pool_test.png")
         cv2.imwrite("image.png", image) 
 
         img_width = image.shape[1]
@@ -66,8 +71,9 @@ class CCPNode (Node):
     
         if len(tags) > 0: # april tag   sign
             temp_stop = ManualControl()
-            temp_stop.x = 0.0
-            temp_stop.y = 0.0
+            temp_stop.x = 25.0
+            # temp_stop.x = 0.0
+            # temp_stop.y = 0.0
             self.manual_control_pub.publish(temp_stop)
             closest_tag = min(tags, key=lambda tag: self.calc_distance_away(tag))
 
@@ -86,7 +92,10 @@ class CCPNode (Node):
             slopes, intercepts = ld.get_slopes_intercepts(lines)
             cv2.imwrite("image.png", image) 
             if len(slopes) != 0:
-                center_slope, index = max((abs(slope), i) for slope, i in slopes)
+
+                # center_slope, index = max((abs(slope), i) for slope, i in slopes)
+                index = max(range(len(slopes)), key=lambda i: abs(slopes[i]))
+                center_slope = slopes[index]        
 
                 if slopes[index] >= 0: 
                     self.desired_heading = (self.curr_heading - (90 - np.degrees(np.arctan(center_slope))))
@@ -103,16 +112,18 @@ class CCPNode (Node):
 
         if self.april_mode:
             send_mc = ManualControl()
-            if self.calc_distance_away(closest_tag) > 1:
-                send_mc.x = 10.0
+            if self.calc_distance_away(closest_tag) > 100: #change this distance for comp
+                send_mc.x = 25.0
                 self.manual_control_pub.publish(send_mc)
             else:
-                send_mc.x = 0.0
-                send_mc.y = 0.0
+                # send_mc.x = 0.0
+                # send_mc.y = 0.0
                 self.manual_control_pub.publish(send_mc)
-                self.turn_lights_on(100)
-                time.sleep(0.1)
-                self.turn_lights_on(0)
+                for i in range(3):
+                    self.turn_lights_on(100)
+                    time.sleep(0.1)
+                    self.turn_lights_on(0)
+                    time.sleep(0.1)
         else:
             self.patrol_the_sea()
 
@@ -153,10 +164,10 @@ class CCPNode (Node):
 
     # Patrolling the seas
     def forward(self, msg): 
-        msg.x = 20.0
+        msg.x = 40.0
 
     def back(self, msg):
-        msg.x = -20.0
+        msg.x = -40.0
         
     def patrol_the_sea(self):
         """

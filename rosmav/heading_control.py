@@ -22,7 +22,7 @@ class HeadingPIDNode(Node):
     def __init__(self):
         super().__init__("heading_control")
 
-        self.declare_parameter("Kp", 1.5)
+        self.declare_parameter("Kp", 1.25)
         self.Kp = self.get_parameter("Kp").value
         self.declare_parameter("Ki", 0.0)
         self.Ki = self.get_parameter("Ki").value
