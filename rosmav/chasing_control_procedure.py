@@ -20,7 +20,7 @@ class CCPNode (Node):
     fy = 1060.7
     desired_heading = 0
     curr_heading = 0
-
+    desired_tags = []
     def __init__(self):
         super().__init__("CCP")
 
@@ -67,8 +67,9 @@ class CCPNode (Node):
         img_height = image.shape[0]
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         
-        tags = self.at_detector.detect(image, estimate_tag_pose=True, camera_params=[self.fx, self.fy, img_width/8, img_height/8], tag_size=0.1)
+        tags = self.at_detector.detect(image, estimate_tag_pose=True, camera_params=[self.fx, self.fy, 2000/2, 1121/2], tag_size=0.1)
     
+        self.get_logger().info(f"April Mode: {self.april_mode}")
         if len(tags) > 0: # april tag   sign
             temp_stop = ManualControl()
             temp_stop.x = 25.0
@@ -78,12 +79,25 @@ class CCPNode (Node):
             closest_tag = min(tags, key=lambda tag: self.calc_distance_away(tag))
 
             # self.desired_heading = int(self.calc_rel_horizontal_angle(closest_tag, img_width)) + self.curr_heading
-            self.desired_heading = self.curr_heading - int(self.calc_rel_horizontal_angle(closest_tag, img_width)) 
+            self.desired_heading = self.curr_heading + int(self.calc_rel_horizontal_angle(closest_tag, img_width)) 
             self.desired_heading = (self.desired_heading + 360) % 360
             # might be incorrect
 
-
             self.april_mode = True
+
+            # # self.get_logger().info(f"CLOSEST TAG DISTANCE: {self.calc_distance_away(closest_tag)}")
+            self.get_logger().info(f"HORIZONTAL ANGLE: {self.calc_rel_horizontal_angle(closest_tag, img_width)}")
+            self.get_logger().info(f"HORIZONTAL ANGLE: {self.calc_rel_horizontal_angle(closest_tag, img_width)}")
+            self.get_logger().info(f"HORIZONTAL ANGLE: {self.calc_rel_horizontal_angle(closest_tag, img_width)}")
+            self.get_logger().info(f"HORIZONTAL ANGLE: {self.calc_rel_horizontal_angle(closest_tag, img_width)}")
+            self.get_logger().info(f"HORIZONTAL ANGLE: {self.calc_rel_horizontal_angle(closest_tag, img_width)}")
+            self.get_logger().info(f"HORIZONTAL ANGLE: {self.calc_rel_horizontal_angle(closest_tag, img_width)}")
+            self.get_logger().info(f"HORIZONTAL ANGLE: {self.calc_rel_horizontal_angle(closest_tag, img_width)}")
+            self.get_logger().info(f"HORIZONTAL ANGLE: {self.calc_rel_horizontal_angle(closest_tag, img_width)}")
+            self.get_logger().info(f"HORIZONTAL ANGLE: {self.calc_rel_horizontal_angle(closest_tag, img_width)}")
+            self.get_logger().info(f"HORIZONTAL ANGLE: {self.calc_rel_horizontal_angle(closest_tag, img_width)}")
+
+            #self.get_logger().info(f"NUMBER OF TAGS: {len(tags)}")
         else: # lane following
             self.april_mode = False
             image = self.cvb.imgmsg_to_cv2(msg, "bgr8")
@@ -103,6 +117,8 @@ class CCPNode (Node):
                     self.desired_heading = (self.curr_heading + (90 + np.degrees(np.arctan(center_slope))))
             else:
                 self.desired_heading = self.curr_heading
+        
+        self.desired_heading = (self.desired_heading + 360) % 360
 
         new_desired_heading = Int16()
         
@@ -113,17 +129,19 @@ class CCPNode (Node):
         if self.april_mode:
             send_mc = ManualControl()
             if self.calc_distance_away(closest_tag) > 100: #change this distance for comp
-                send_mc.x = 25.0
+                send_mc.x = 30.0
                 self.manual_control_pub.publish(send_mc)
             else:
-                # send_mc.x = 0.0
-                # send_mc.y = 0.0
-                self.manual_control_pub.publish(send_mc)
-                for i in range(3):
+                
+                for i in range(2):
                     self.turn_lights_on(100)
-                    time.sleep(0.1)
+                    time.sleep(1)
                     self.turn_lights_on(0)
                     time.sleep(0.1)
+
+                send_mc.x = 0.0
+                send_mc.y = 0.0
+                self.manual_control_pub.publish(send_mc)
         else:
             self.patrol_the_sea()
 
@@ -134,10 +152,17 @@ class CCPNode (Node):
     
 
     # April Tag Functions
-    def calc_rel_horizontal_angle(self, tag, width):
+    def calc_rel_horizontal_angle(self, tag,width):
         x = tag.center[0]
         rel_x = (x - width/2)
         return (np.degrees(np.arctan(rel_x/self.fx)))
+        # x = tag.center[0]
+        # if x > 400:
+        #     return(x/400*90) 
+        # elif x < 240:
+        #     return(-x/400*90)
+        # else:
+        #     return 0
 
     def calc_rel_vertical_angle(self, tag, height):
         y = tag.center[1]
@@ -155,7 +180,7 @@ class CCPNode (Node):
         Args:
             level (int): The level to turn the lights on to. 0 is off, 100 is full
         """
-        self.get_logger().info(f"Turning lights on to level {level}")
+        #self.get_logger().info(f"Turning lights on to level {level}")
         commands = OverrideRCIn()
         commands.channels = [OverrideRCIn.CHAN_NOCHANGE] * 10
         commands.channels[8] = 1000 + level * 10
@@ -167,7 +192,7 @@ class CCPNode (Node):
         msg.x = 40.0
 
     def back(self, msg):
-        msg.x = -40.0
+        msg.x = -20.0
         
     def patrol_the_sea(self):
         """
